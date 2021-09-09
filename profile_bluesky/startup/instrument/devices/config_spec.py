@@ -38,6 +38,16 @@ __all__ = """
 	bsz
 	deth
 	cryov
+	utabv
+	drtabv
+	dltabv
+	utabh
+	dtabh
+	nmtheta
+	nmpitch
+	nmchi
+	nmbend
+	nmtwist
 	sec
 	mon
 	det
@@ -146,7 +156,7 @@ pinv = EpicsMotor('17bm:m18', name='pinv', labels=('motor',))  # pinv
 # Motors - previously controlled directly in SPEC; controller(s) at 
 #          10.40.30.60 and 10.40.30.61 on beamline's "SPEC" network.
 #          controller:  Step-Pak SPI-MAXnet-8000 8-Axis Ethernet
-#          Indexer/Controller
+#          Indexer/Controller.  Now under EPICS control
 #-----------------------------------------------------------------------
 
 
@@ -160,6 +170,17 @@ pinv = EpicsMotor('17bm:m18', name='pinv', labels=('motor',))  # pinv
 # 97: MOT097 =     OMS:0/5    302  1  2500  200   50  125    0 0x003    nmchi  NMChi  # NMChi
 # 98: MOT098 =     OMS:0/7    302  1  2500  200   50  125    0 0x003   nmbend  NMBent  # NMBent
 # 99: MOT099 =     OMS:1/0    400  1  2500  200   50  125    0 0x003  nmtwist  NMTwist  # NMTwist
+
+utabv = EpicsMotor('17bmOMS:m90', name='utabv', labels=('motor',))   # UpStrTablV
+drtabv = EpicsMotor('17bmOMS:m91', name='drtabv', labels=('motor',))  # DnRStrTablV
+dltabv = EpicsMotor('17bmOMS:m92', name='dltabv', labels=('motor',))  # DnLStrTablV
+utabh = EpicsMotor('17bmOMS:m93', name='utabh', labels=('motor',))   # UpStrTabH
+dtabh = EpicsMotor('17bmOMS:m94', name='dtabh', labels=('motor',))   # DnStrTablH
+nmtheta = EpicsMotor('17bmOMS:m95', name='nmtheta', labels=('motor',)) # NMTheta
+nmpitch = EpicsMotor('17bmOMS:m96', name='nmpitch', labels=('motor',)) # NMThetAdj
+nmchi = EpicsMotor('17bmOMS:m97', name='nmchi', labels=('motor',))   # NMChi
+nmbend = EpicsMotor('17bmOMS:m98', name='nmbend', labels=('motor',))  # NMBent
+nmtwist = EpicsMotor('17bmOMS:m99', name='nmtwist', labels=('motor',)) # NMTwist
 
 
 #-----------------------------------------------------------------------
