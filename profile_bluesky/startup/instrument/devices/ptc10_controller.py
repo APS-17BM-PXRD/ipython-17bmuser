@@ -74,6 +74,9 @@ ptc10 = BM17_PTC10("17bmb:tc1:", name="ptc10")
 ptc10.report_dmov_changes.put(True)  # a diagnostic
 ptc10.tolerance.put(1.0)  # done when |readback-setpoint|<=tolerance
 
+# For 17BM add a simpler path to ramp rate
+ptc10.ramp = ptc10.pidA.ramprate
+
 # From USAXS, commenting out for now -- MW 2022.03.21
 # aliases to make PTC10 have same terms as Linkam controllers
 #! ptc10.temperature = ptc10
