@@ -49,7 +49,7 @@ class BM17_PTC10(PTC10PositionerMixin, PVPositioner):
     # PTC10 thermocouple module : reads as NaN 
     temperatureB = Component(EpicsSignalRO, "2B:temperature", kind="config")
     temperatureC = Component(EpicsSignalRO, "2C:temperature", kind="config")
-    temperatureD = Component(EpicsSignalRO, "2D:temperature", kind="omitted")  # it's a NaN now
+    temperatureD = Component(EpicsSignalRO, "2D:temperature", kind="config")
 
     # Purely diagnostic
     #! temperatureA = Component(PTC10TcChannel, "2A")
