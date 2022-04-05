@@ -37,7 +37,7 @@ class SlitDevice(MotorBundle):
 
 
 
-slitUpH = SlitDevice(pv='17bmb:SlitUpH')
-slitUpV = SlitDevice(pv='17bmb:SlitUpV')
-slitDnH = SlitDevice(pv='17bmb:SlitDnH')
-slitDnV = SlitDevice(pv='17bmb:SlitDnV')
+slitUpH = SlitDevice(pv='17bmb:SlitUpH', name = 'slitUpH')
+slitUpV = SlitDevice(pv='17bmb:SlitUpV', name = 'slitUpV')
+slitDnH = SlitDevice(pv='17bmb:SlitDnH', name = 'slitDnH')
+slitDnV = SlitDevice(pv='17bmb:SlitDnV', name = 'slitDnV')

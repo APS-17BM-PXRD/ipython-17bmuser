@@ -9,7 +9,7 @@ __all__ = [
 from ..session_logs import logger
 logger.info(__file__)
 
-from ophyd import Component
+from ophyd import Component, Device, Signal
 from ophyd import EpicsSignalRO
 from ophyd import EpicsSignalWithRBV
 from ophyd import PVPositioner

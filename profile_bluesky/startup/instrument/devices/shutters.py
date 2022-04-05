@@ -53,5 +53,5 @@ class Shutter17BM(EpicsOnOffShutter):
 
 shutter17bmb = EpicsOnOffShutter(openClosePV, name="shutter17bmb")
 # 17BM's shutter doesn't follow default values
-shutter17bmb.close_value = 1
-shutter17bmb.open_value = 0
+shutter17bmb.close_value = 1  # Insert
+shutter17bmb.open_value = 0 # Retract

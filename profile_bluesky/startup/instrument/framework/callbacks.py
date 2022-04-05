@@ -12,7 +12,8 @@ from ..session_logs import logger
 
 logger.info(__file__)
 
-import apstools.filewriters
+#import apstools.filewriters
+import apstools.callbacks
 import apstools.utils
 import datetime
 import os
@@ -20,7 +21,8 @@ import os
 from .initialize import RE, callback_db
 
 # write scans to SPEC data file
-specwriter = apstools.filewriters.SpecWriterCallback()
+#specwriter = apstools.filewriters.SpecWriterCallback()
+specwriter = apstools.callbacks.SpecWriterCallback()
 # _path = "/tmp"      # make the SPEC file in /tmp (assumes OS is Linux)
 _path = os.getcwd()  # make the SPEC file in current working directory (assumes is writable)
 specwriter.newfile(os.path.join(_path, specwriter.spec_filename))
@@ -34,7 +36,8 @@ logger.info("   to change SPEC file, use command:   newSpecFile('title')")
 
 def spec_comment(comment, doc=None):
     # supply our specwriter to the standard routine
-    apstools.filewriters.spec_comment(comment, doc, specwriter)
+    #apstools.filewriters.spec_comment(comment, doc, specwriter)
+    apstools.callbacks.spec_comment(comment, doc, specwriter)
 
 
 def newSpecFile(title, scan_id=1):
