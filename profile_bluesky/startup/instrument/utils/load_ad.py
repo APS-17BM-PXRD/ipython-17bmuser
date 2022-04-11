@@ -1,4 +1,4 @@
-""" Loads a new eiger device """
+""" Loading AD devices """
 
 from ..devices.ad_varex import VarexSingleTrigDet, VarexMultiTrigDet 
 from ..devices.ad_lightfield import LocalLightfieldDetector
@@ -8,55 +8,20 @@ from ..session_logs import logger
 logger.info(__file__)
 
 __all__ = """
-    load_varex_single
-    load_varex_multi
+    load_varex
     junk_phase_template
     dark_phase_template
     light_phase_template
     load_lightfield
 """.split()
 
-
-def load_varex_single(pv="17bmXRD:"):
-
-    print("-- Loading Varex detector with Single Trigger --")
-    varex1 = VarexSingleTrigDet(pv, name="varex1")
-#   det_pe = LocalVarexDetector("XRD1:", name="det_pe")
-#    sd.baseline.append(varex1)
-
-    varex1.wait_for_connection(timeout=10)
-    # This is needed otherwise .get may fail!!!
-
-#    varex1.hdf1.create_directory.put(-5)
-    varex1.cam.stage_sigs["image_mode"] = "Single"
-    varex1.cam.stage_sigs["num_images"] = 1
-    varex1.cam.stage_sigs["acquire_time"] = 0.05
-    varex1.cam.stage_sigs["acquire_period"] = 0.105
-#    varex1.hdf1.stage_sigs["lazy_open"] = 1
-#    varex1.hdf1.stage_sigs["compression"] = "LZ4"
-#    varex1.hdf1.stage_sigs["file_template"] = "%s%s_%3.3d.h5"
-#    del varex1.hdf1.stage_sigs["capture"]
-#    varex1.hdf1.stage_sigs["capture"] = 1
-
-    print("Done!")
-    print("All done!")
-
-    return varex1
-
-
 #Default cycle takes 2 junk, 10 dark, 30 data
 #To change at run_time: varex.trigger_cycle = new_cycle
-    
-#junk_phase_template = [('junk', {'shutter17bmb':'closed'})]                                                                      
-#dark_phase_template = [('dark', {'shutter17bmb':'closed'})]                                                                      
-#light_phase_template = [('light', {'shutter17bmb':'open'})]
 
-#Shutter may have to be integrated into AD setup; for the time being
-#using acquire_time to test multiple frames - MW 2022.04.04
-junk_phase_template = [('junk', {'acquire_time':0.5})]                                                                      
-dark_phase_template = [('dark', {'acquire_time':0.1})]                                                                      
-light_phase_template = [('light', {'acquire_time':1.0})]
-
+#shutter17bmb: 1 -- inserted; 0 -- retracted
+junk_phase_template = [('junk', {shutter17bmb.signal:1})]                                                                      
+dark_phase_template = [('dark', {shutter17bmb.signal:1})]                                                                      
+light_phase_template = [('light', {shutter17bmb.signal:0})
 
 default_n_junk = 2      
 default_n_dark = 10
@@ -65,46 +30,46 @@ default_n_light = 10
 default_cycle = [junk_phase_template*default_n_junk + 
                  dark_phase_template*default_n_dark +
                  light_phase_template*default_n_light]
+
+def reset_dark_light_cycle(n_junk, n_dark, n_light, num_images_sig,
+                           shutter_sig = shutter17bmb.signal, openVal = 1, closedVal = 0):
+
+    junk_phase_template = [('junk', {shutter_sig:closedVal, num_images_sig:n_junk})]                                                                      
+    dark_phase_template = [('dark', {shutter_sig:closedVal, num_images_sig:n_dark})]                                                                      
+    light_phase_template = [('light', {shutter_sig:openVal, num_images_sig:n_light})]
     
-def load_varex_multi(pv="17bmXRD:", trigger_cycle = default_cycle):
-
-    print("-- Loading Varex detector with Multiple Trigger --")
-    varexN = VarexMultiTrigDet(pv, name="varexN", trigger_cycle = trigger_cycle)
-#   Commented out next line as having it as a baseline reading was killing plans
-#   it wasn't a detector for
-#    sd.baseline.append(varexN) 
-
-    #reseting trigger cycle
-    junk_phase_template = [('junk', {varexN.cam.acquire_time:0.5})]                                                                      
-    dark_phase_template = [('dark', {varexN.cam.acquire_time:0.1})]                                                                      
-    light_phase_template = [('light', {varexN.cam.acquire_time:1.0})]
-
-    default_cycle = [junk_phase_template*default_n_junk + 
-                     dark_phase_template*default_n_dark +
-                     light_phase_template*default_n_light]
+    trig_cycle = [junk_phase_template + dark_phase_template + light_phase_template]
     
+    return trig_cycle
 
-    varexN.wait_for_connection(timeout=10)
-    # This is needed otherwise .get may fail!!!
+def load_varex(pv="17bmXRD:", trigger_cycle = default_cycle, multi = False):
 
-#    varexN.hdf1.create_directory.put(-5)
-    varexN.cam.stage_sigs["image_mode"] = "Multiple"
-    varexN.cam.stage_sigs["num_images"] = 1
-    varexN.cam.stage_sigs["acquire_time"] = 0.05
-    varexN.cam.stage_sigs["acquire_period"] = 0.105
-#    varexN.hdf1.stage_sigs["lazy_open"] = 1
-#    varexN.hdf1.stage_sigs["compression"] = "LZ4"
-#    varexN.hdf1.stage_sigs["file_template"] = "%s%s_%3.3d.h5"
-#    del varexN.hdf1.stage_sigs["capture"]
-#    varexN.hdf1.stage_sigs["capture"] = 1
+
+
+    if not multi:
+        print("-- Loading Varex detector with Single Trigger --")
+        varex = VarexSingleTrigDet(pv, name="varex1")
+    else:
+        print("-- Loading Varex detector with Multiple Trigger --")
+        varex = VarexMultiTrigDet(pv, name="varexN", trigger_cycle = trigger_cycle)
     
-#    varexN.trigger_cycle(default_cycle)
-    varexN.trigger_cycle = default_cycle
+    varex.wait_for_connection(timeout=5)
+    
+    varex.cam.stage_sigs["num_images"] = 1
+        
+    if multi:
+        varex.cam.stage_sigs["image_mode"] = "Multiple"
+        if trigger_cycle == default_cycle:
+            varex.trigger_cycle = reset_dark_light_cycle(default_n_junk, default_n_dark,
+                                                         default_n_light, varex.cam.num_images, 
+                                                         shutter_sig = shutter17bmb.signal)
+    else:
+        varex.cam.stage_sigs["image_mode"] = "Single"
 
     print("Done!")
     print("All done!")
-
-    return varexN    
+    
+    return varex
     
 def load_lightfield(pv="17bmLF1:"):
 #   Need to investigate this more: 
