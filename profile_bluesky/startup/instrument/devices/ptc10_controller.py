@@ -1,9 +1,12 @@
 """
 PTC10 Programmable Temperature Controller
+
+Use load_ptc10 in ..utils.load_ptc to create object
+
 """
 
 __all__ = [
-    "ptc10",
+    "BM17_PTC10_Base",
 ]
 
 from ..session_logs import logger
@@ -18,8 +21,7 @@ from ophyd import EpicsSignalRO
 from ophyd import EpicsSignalWithRBV
 from ophyd import PVPositioner
 
-
-class BM17_PTC10(PTC10PositionerMixin, PVPositioner):
+class BM17_PTC10_Base(PTC10PositionerMixin, PVPositioner):
     """
     PTC10 as seen from the GUI screen
     The IOC templates and .db files provide a more general depiction.
@@ -38,15 +40,12 @@ class BM17_PTC10(PTC10PositionerMixin, PVPositioner):
     * Is it at temperature?:  ``ptc10.done.get()``
     """
 
-    # PVPositioner interface
-    readback = Component(EpicsSignalRO, "2A:temperature", kind="hinted")
-    setpoint = Component(EpicsSignalWithRBV, "5A:setPoint", kind="hinted")
-
     # PTC10 base
     enable = Component(EpicsSignalWithRBV, "outputEnable", kind="config", string=True)
 
     # "Positioner"-case
     # PTC10 thermocouple module : reads as NaN 
+    temperatureA = Component(EpicsSignalRO, "2A:temperature", kind="config")
     temperatureB = Component(EpicsSignalRO, "2B:temperature", kind="config")
     temperatureC = Component(EpicsSignalRO, "2C:temperature", kind="config")
     temperatureD = Component(EpicsSignalRO, "2D:temperature", kind="config")
@@ -70,14 +69,4 @@ class BM17_PTC10(PTC10PositionerMixin, PVPositioner):
     # pidD = Component(PTC10AioChannel, "5D:")  # unused now
 
 
-ptc10 = BM17_PTC10("17bmb:tc1:", name="ptc10")
-ptc10.report_dmov_changes.put(True)  # a diagnostic
-ptc10.tolerance.put(1.0)  # done when |readback-setpoint|<=tolerance
 
-# For 17BM add a simpler path to ramp rate
-ptc10.ramp = ptc10.pidA.ramprate
-
-# From USAXS, commenting out for now -- MW 2022.03.21
-# aliases to make PTC10 have same terms as Linkam controllers
-#! ptc10.temperature = ptc10
-#! ptc10.ramp = ptc10.pidA.ramprate
